@@ -6,23 +6,33 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Simple Chat</title>
     <style>
-      html,
-      body {
-        margin: 0;
-        height: 100%;
-      }
       #main {
         background-color: #00000040;
         margin: 20px;
         padding: 10px;
         color: white;
       }
+      #messages {
+        padding: 10px;
+      }
+      li {
+        list-style-type: none;
+        padding: 5px;
+        border: 2px solid white;
+      }
+      #error {
+        color: red;
+      }
     </style>
   </head>
   <body id="body">
     <div id="main">
       <h1>Simple Chat</h1>
-      <p id="user"></p>
+      <p id="user">Not Signed In</p>
+      <ul id="messages"></ul>
+      <input type="text" name="" id="message" placeholder="Message" />
+      <input type="button" id="send" value="Send" />
+      <p id="error"></p>
     </div>
     <script src="../ts/index.ts" type="module" defer></script>
   </body>

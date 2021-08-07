@@ -18,3 +18,55 @@ axios
     console.log(err);
     document.getElementById("user").innerText = "Error: " + err;
   });
+
+let messages = [];
+function getMessages() {
+  axios
+    .get("/api/messages")
+    .then((res) => {
+      console.log(res.data);
+      messages = res.data;
+      displayMessages();
+    })
+    .catch((e) => {
+      console.log(e);
+      document.getElementById("messages").innerText = `Error! (${e})`;
+    });
+}
+
+function displayMessages() {
+  console.log("display messages");
+
+  let messagesElement = document.getElementById("messages");
+  messagesElement.innerHTML = "";
+  messages.forEach((m) => {
+    var newLi = document.createElement("LI");
+    newLi.style.backgroundColor = "#" + m.color;
+    var text = document.createTextNode(m.message);
+    newLi.appendChild(text);
+    messagesElement.appendChild(newLi);
+  });
+}
+
+getMessages();
+setInterval(getMessages, 1500);
+
+document.getElementById("send").addEventListener("click", () => {
+  // @ts-expect-error
+  let msg = document.getElementById("message").value;
+  if (msg.length !== 0) {
+    axios
+      .post("/api/message", { uuid: uuid, message: msg })
+      .then((res) => {
+        console.log(res.data);
+        messages = res.data;
+        displayMessages();
+        // @ts-expect-error
+        document.getElementById("message").value = "";
+      })
+      .catch((e) => {
+        console.log(e);
+        document.getElementById("error").innerText = `Failed to Send! (${e})`;
+      });
+  }
+});
