@@ -1,4 +1,4 @@
 node_modules
 web/dist
 server/build
-wqb/.parcel-cache
+web/.parcel-cache
