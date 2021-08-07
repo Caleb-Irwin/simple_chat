@@ -4,12 +4,16 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "concurrently \"nodemon build/index.js\" \"tsc --watch\" ",
+    "build": "tsc"
   },
   "author": "Caleb Irwin (me at calebirwin.ca)",
   "license": "ISC",
   "devDependencies": {
     "@types/express": "^4.17.13",
+    "concurrently": "^6.2.0",
+    "nodemon": "^2.0.12",
     "typescript": "^4.3.5"
   },
   "dependencies": {
