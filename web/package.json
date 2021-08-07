@@ -1,0 +1,16 @@
+{
+  "name": "simple-server-site",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "parcel ./public/index.html"
+  },
+  "author": "Caleb Irwin (me @ calebirwin.ca)",
+  "license": "ISC",
+  "devDependencies": {
+    "parcel": "^2.0.0-rc.0",
+    "typescript": "^4.3.5"
+  }
+}
