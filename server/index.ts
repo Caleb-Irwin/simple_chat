@@ -30,7 +30,10 @@ app.get("/api/ping", (req, res) => {
 
 app.get("/api/newUser", (req, res) => {
   let uuid = v4();
-  let color = Math.floor(Math.random() * 16777215).toString(16);
+  let color = "";
+  while (color.length !== 6) {
+    color = Math.floor(Math.random() * 16777215).toString(16);
+  }
   state.users[uuid] = color;
   res.send(JSON.stringify({ uuid, color }));
 });
