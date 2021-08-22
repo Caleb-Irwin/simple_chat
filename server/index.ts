@@ -1,7 +1,12 @@
+import http from "http";
 import express from "express";
 import { v4 } from "uuid";
+import { Server } from "socket.io";
 
 const app = express();
+const server = http.createServer(app);
+const io = new Server(server);
+
 const port = 8080;
 
 type color = string;
@@ -61,6 +66,13 @@ app.post("/api/message", (req, res) => {
   res.send(JSON.stringify(state.messages));
 });
 
-app.listen(port, () => {
+io.on("connection", (socket) => {
+  console.log("a user connected");
+  socket.on("disconnect", () => {
+    console.log("user disconnected");
+  });
+});
+
+server.listen(port, () => {
   console.log(`Running on post ${port}`);
 });
