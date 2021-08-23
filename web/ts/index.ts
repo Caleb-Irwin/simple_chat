@@ -1,6 +1,14 @@
 import axios from "axios";
 
-import "./message";
+import mmm from "./message";
+
+let messages = [];
+
+let msgManager = new mmm((data) => {
+  console.log(data);
+  messages = data;
+  displayMessages();
+});
 
 let uuid = undefined;
 let color = undefined;
@@ -24,23 +32,8 @@ function newUser() {
 }
 newUser();
 
-let messages = [];
-function getMessages() {
-  axios
-    .get("/api/messages")
-    .then((res) => {
-      console.log(res.data);
-      messages = res.data;
-      displayMessages();
-    })
-    .catch((e) => {
-      console.log(e);
-      document.getElementById("messages").innerText = `Error! (${e})`;
-    });
-}
-
 function displayMessages() {
-  console.log("display messages");
+  // console.log("display messages");
 
   let messagesElement = document.getElementById("messages");
   messagesElement.innerHTML = "";
@@ -53,26 +46,11 @@ function displayMessages() {
   });
 }
 
-getMessages();
-setInterval(getMessages, 1500);
-
 document.getElementById("send").addEventListener("click", () => {
   // @ts-expect-error
   let msg = document.getElementById("message").value;
   if (msg.length !== 0) {
-    axios
-      .post("/api/message", { uuid: uuid, message: msg })
-      .then((res) => {
-        console.log(res.data);
-        messages = res.data;
-        displayMessages();
-        // @ts-expect-error
-        document.getElementById("message").value = "";
-      })
-      .catch((e) => {
-        console.log(e);
-        document.getElementById("error").innerText = `Failed to Send! (${e})`;
-      });
+    msgManager.sendMessage(msg, uuid);
   }
 });
 
