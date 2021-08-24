@@ -2,6 +2,7 @@ import { createServer } from "http";
 import express from "express";
 import { v4 } from "uuid";
 import { Server } from "socket.io";
+import compression from "compression";
 
 const app = express();
 const server = createServer(app);
@@ -25,12 +26,9 @@ let state: stateInterface = {
   messages: [],
 };
 
+app.use(compression());
 app.use(express.static("../web/dist/"));
 app.use(express.json());
-
-app.get("/api/ping", (req, res) => {
-  res.send("Pong!");
-});
 
 app.get("/api/newUser", (req, res) => {
   let uuid = v4();
@@ -39,6 +37,7 @@ app.get("/api/newUser", (req, res) => {
     color = Math.floor(Math.random() * 16777215).toString(16);
   }
   state.users[uuid] = color;
+  console.log(`**NEW** User (${uuid}, #${color})`);
   res.send(JSON.stringify({ uuid, color }));
 });
 
