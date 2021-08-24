@@ -30,17 +30,6 @@ app.use(compression());
 app.use(express.static("../web/dist/"));
 app.use(express.json());
 
-app.get("/api/newUser", (req, res) => {
-  let uuid = v4();
-  let color = "";
-  while (color.length !== 6) {
-    color = Math.floor(Math.random() * 16777215).toString(16);
-  }
-  state.users[uuid] = color;
-  console.log(`**NEW** User (${uuid}, #${color})`);
-  res.send(JSON.stringify({ uuid, color }));
-});
-
 app.get("/api/messages", (req, res) => {
   res.send(JSON.stringify(state.messages));
 });
@@ -49,9 +38,20 @@ const io = new Server(server);
 
 io.on("connection", (socket) => {
   console.log(`a user connected (${socket.id})`);
-  io.emit("msg", state.messages);
+  socket.emit("msg:receive", state.messages);
 
-  socket.on("msg", (msg) => {
+  socket.on("auth:create", (callback) => {
+    let uuid = v4();
+    let color = "";
+    while (color.length !== 6) {
+      color = Math.floor(Math.random() * 16777215).toString(16);
+    }
+    state.users[uuid] = color;
+    console.log(`**NEW** User (${uuid}, #${color})`);
+    callback({ uuid, color });
+  });
+
+  socket.on("msg:create", (msg) => {
     console.log(msg);
     if (!state.users[msg.uuid]) {
       // res.sendStatus(401);
@@ -70,7 +70,7 @@ io.on("connection", (socket) => {
     if (state.messages.length > 16) {
       state.messages.shift();
     }
-    io.emit("msg", state.messages);
+    io.emit("msg:receive", state.messages);
   });
 
   socket.on("disconnect", () => {
