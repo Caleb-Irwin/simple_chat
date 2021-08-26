@@ -1,13 +1,10 @@
 import io, { Socket } from "socket.io-client";
 
-interface message {
-  msg: string;
-  color: string;
-}
+import { authCreate, messages, msgCreate } from "../../server/socketTypes";
 
 interface config {
   onAuth?: (uuid: string, color: string) => void;
-  onMessage?: (data: message[]) => void;
+  onMessage?: (data: messages) => void;
   uuid?: string;
 }
 
@@ -29,7 +26,7 @@ export default class MessageManagerMaker {
       }
     });
 
-    socket.on("msg:receive", (msg: message[]) => {
+    socket.on("msg:receive", (msg: messages) => {
       conf.onMessage && conf.onMessage(msg);
     });
 
@@ -37,20 +34,17 @@ export default class MessageManagerMaker {
   }
 
   newAccount() {
-    this.socket.emit(
-      "auth:create",
-      (account: { uuid: string; color: string }) => {
-        this.uuid = account.uuid;
-        this.color = account.color;
-        this.conf.onAuth && this.conf.onAuth(this.uuid, this.color);
-      }
-    );
+    this.socket.emit("auth:create", (account: authCreate) => {
+      this.uuid = account.uuid;
+      this.color = account.color;
+      this.conf.onAuth && this.conf.onAuth(this.uuid, this.color);
+    });
   }
 
   sendMessage(msg: string) {
     this.socket.emit("msg:create", {
       uuid: this.uuid,
       msg,
-    });
+    } as msgCreate);
   }
 }

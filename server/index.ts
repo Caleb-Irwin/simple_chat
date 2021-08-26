@@ -4,21 +4,16 @@ import { v4 } from "uuid";
 import { Server } from "socket.io";
 import compression from "compression";
 
+import { msgCreate, messages, authCreate } from "./socketTypes";
+
 const app = express();
 const server = createServer(app);
 
 const port = 8080;
 
-type color = string;
-
-interface message {
-  color: string;
-  message: string;
-}
-
 interface stateInterface {
   users: { [uuid: string]: string };
-  messages: message[];
+  messages: messages;
 }
 
 let state: stateInterface = {
@@ -40,7 +35,7 @@ io.on("connection", (socket) => {
   console.log(`> a user connected (${socket.id})`);
   socket.emit("msg:receive", state.messages);
 
-  socket.on("auth:create", (callback) => {
+  socket.on("auth:create", (callback: (auth: authCreate) => void) => {
     let uuid = v4();
     let color = "";
     while (color.length !== 6) {
@@ -51,7 +46,7 @@ io.on("connection", (socket) => {
     callback({ uuid, color });
   });
 
-  socket.on("msg:create", (msg) => {
+  socket.on("msg:create", (msg: msgCreate) => {
     console.log(`| #${state.users[msg.uuid]} "${msg.msg}" (${msg.uuid})`);
     if (!state.users[msg.uuid]) {
       // res.sendStatus(401);

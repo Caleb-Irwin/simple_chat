@@ -1,8 +1,8 @@
-import mmm from "./message";
+import msgManager from "./message";
 
 let messages = [];
 
-let msgManager = new mmm({
+let mm = new msgManager({
   onMessage: (data) => {
     console.log(data);
     messages = data;
@@ -32,10 +32,10 @@ document.getElementById("send").addEventListener("click", () => {
   // @ts-expect-error
   let msg = document.getElementById("message").value;
   if (msg.length !== 0) {
-    msgManager.sendMessage(msg);
+    mm.sendMessage(msg);
   }
 });
 
 document.getElementById("newUser").addEventListener("click", () => {
-  msgManager.newAccount();
+  mm.newAccount();
 });
