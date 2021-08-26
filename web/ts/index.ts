@@ -2,19 +2,19 @@ import mmm from "./message";
 
 let messages = [];
 
-let msgManager = new mmm(
-  (data) => {
+let msgManager = new mmm({
+  onMessage: (data) => {
     console.log(data);
     messages = data;
     displayMessages();
   },
-  (uuid, color) => {
+  onAuth: (uuid, color) => {
     document.getElementById("body").style.backgroundColor = "#" + color;
     document.getElementById(
       "user"
     ).innerText = `UUID: "${uuid}" Color: "#${color}"`;
-  }
-);
+  },
+});
 
 function displayMessages() {
   let messagesElement = document.getElementById("messages");

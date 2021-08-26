@@ -5,32 +5,32 @@ interface message {
   color: string;
 }
 
-type onAuthType = (uuid: string, color: string) => void;
+interface config {
+  onAuth?: (uuid: string, color: string) => void;
+  onMessage?: (data: message[]) => void;
+  uuid?: string;
+}
 
 export default class MessageManagerMaker {
   socket: Socket;
   uuid: string = null;
   color: string = "000000";
-  onAuth: (uuid: string, color: string) => void = () => {};
+  conf: config;
 
-  constructor(
-    handleMessages: (data: message[]) => void,
-    onAuth?: onAuthType,
-    id?: string
-  ) {
-    this.onAuth = onAuth;
+  constructor(conf: config) {
+    this.conf = conf;
     let socket = io();
 
     socket.on("connect", () => {
       console.log(`Connected! ID: ${socket.id}`);
 
-      if (!id) {
+      if (!conf.uuid) {
         this.newAccount();
       }
     });
 
     socket.on("msg:receive", (msg: message[]) => {
-      handleMessages(msg);
+      conf.onMessage && conf.onMessage(msg);
     });
 
     this.socket = socket;
@@ -42,7 +42,7 @@ export default class MessageManagerMaker {
       (account: { uuid: string; color: string }) => {
         this.uuid = account.uuid;
         this.color = account.color;
-        this.onAuth(this.uuid, this.color);
+        this.conf.onAuth && this.conf.onAuth(this.uuid, this.color);
       }
     );
   }
