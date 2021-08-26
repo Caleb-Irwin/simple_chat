@@ -37,7 +37,7 @@ app.get("/api/messages", (req, res) => {
 const io = new Server(server);
 
 io.on("connection", (socket) => {
-  console.log(`a user connected (${socket.id})`);
+  console.log(`> a user connected (${socket.id})`);
   socket.emit("msg:receive", state.messages);
 
   socket.on("auth:create", (callback) => {
@@ -47,20 +47,20 @@ io.on("connection", (socket) => {
       color = Math.floor(Math.random() * 16777215).toString(16);
     }
     state.users[uuid] = color;
-    console.log(`**NEW** User (${uuid}, #${color})`);
+    console.log(`* New User (${uuid}, #${color})`);
     callback({ uuid, color });
   });
 
   socket.on("msg:create", (msg) => {
-    console.log(msg);
+    console.log(`| #${state.users[msg.uuid]} "${msg.msg}" (${msg.uuid})`);
     if (!state.users[msg.uuid]) {
       // res.sendStatus(401);
-      console.log("Unauthorized (401)");
+      console.log("! Unauthorized (401)");
       return;
     }
     if (!msg.msg || msg.msg.length === 0) {
       // res.sendStatus(400);
-      console.log("Bad Request (400)");
+      console.log("! Bad Request (400)");
       return;
     }
     state.messages.push({
@@ -74,7 +74,7 @@ io.on("connection", (socket) => {
   });
 
   socket.on("disconnect", () => {
-    console.log("user disconnected");
+    console.log("< user disconnected");
   });
 });
 
