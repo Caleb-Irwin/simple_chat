@@ -1,5 +1,7 @@
 import msgManager from "./message";
 
+let raw = false;
+
 let mm = new msgManager({
   onMessage: (newMsg) => {
     console.log("newMsg", newMsg);
@@ -19,7 +21,9 @@ function displayMessages() {
   mm.messages.forEach((m) => {
     var newLi = document.createElement("LI");
     newLi.style.backgroundColor = "#" + m.color;
-    var text = document.createTextNode(`${m.senderType}: ${m.message}`);
+    var text = document.createTextNode(
+      raw ? JSON.stringify(m) : `${m.senderType}: ${m.message}`
+    );
     newLi.appendChild(text);
     messagesElement.appendChild(newLi);
   });
@@ -35,4 +39,9 @@ document.getElementById("send").addEventListener("click", () => {
 
 document.getElementById("newUser").addEventListener("click", () => {
   mm.newAccount();
+});
+
+document.getElementById("toggleRaw").addEventListener("click", () => {
+  raw = !raw;
+  displayMessages();
 });

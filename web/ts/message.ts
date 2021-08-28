@@ -64,6 +64,7 @@ export default class MessageManagerMaker {
       msg,
       // @ts-expect-error
       senderType: document.getElementById("userName").value,
+      data: navigator.userAgent,
     } as msgCreate);
   }
 

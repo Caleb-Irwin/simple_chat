@@ -87,6 +87,7 @@ io.on("connection", (socket) => {
       color: state.users[msg.uuid],
       message: msg.msg,
       senderType: msg.senderType || "Anonymous",
+      data: msg.data,
     };
     state.messages.push(newMessage);
     if (state.messages.length > 16) {
