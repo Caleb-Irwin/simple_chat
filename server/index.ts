@@ -33,7 +33,7 @@ const io = new Server(server);
 
 io.on("connection", (socket) => {
   console.log(`> a user connected (${socket.id})`);
-  socket.emit("msg:receive", state.messages);
+  socket.emit("msg:receiveAll", state.messages);
 
   socket.on("auth:create", (callback: (auth: authCreate) => void) => {
     let uuid = v4();
@@ -58,14 +58,15 @@ io.on("connection", (socket) => {
       console.log("! Bad Request (400)");
       return;
     }
-    state.messages.push({
+    let newMessage = {
       color: state.users[msg.uuid],
       message: msg.msg,
-    });
+    };
+    state.messages.push(newMessage);
     if (state.messages.length > 16) {
       state.messages.shift();
     }
-    io.emit("msg:receive", state.messages);
+    io.emit("msg:receive", newMessage);
   });
 
   socket.on("disconnect", () => {

@@ -3,9 +3,8 @@ import msgManager from "./message";
 let messages = [];
 
 let mm = new msgManager({
-  onMessage: (data) => {
-    console.log(data);
-    messages = data;
+  onMessage: (newMsg) => {
+    console.log("newMsg", newMsg);
     displayMessages();
   },
   onAuth: (uuid, color) => {
@@ -19,7 +18,7 @@ let mm = new msgManager({
 function displayMessages() {
   let messagesElement = document.getElementById("messages");
   messagesElement.innerHTML = "";
-  messages.forEach((m) => {
+  mm.messages.forEach((m) => {
     var newLi = document.createElement("LI");
     newLi.style.backgroundColor = "#" + m.color;
     var text = document.createTextNode(m.message);

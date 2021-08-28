@@ -1,11 +1,17 @@
 import io, { Socket } from "socket.io-client";
 
-import { authCreate, messages, msgCreate } from "../../server/socketTypes";
+import {
+  authCreate,
+  messages,
+  msgCreate,
+  message,
+} from "../../server/socketTypes";
 
 interface config {
   onAuth?: (uuid: string, color: string) => void;
-  onMessage?: (data: messages) => void;
+  onMessage?: (newMsg: message) => void;
   uuid?: string;
+  storeMessages?: number;
 }
 
 export default class MessageManagerMaker {
@@ -13,6 +19,7 @@ export default class MessageManagerMaker {
   uuid: string = null;
   color: string = "000000";
   conf: config;
+  messages: messages = [];
 
   constructor(conf: config) {
     this.conf = conf;
@@ -26,7 +33,17 @@ export default class MessageManagerMaker {
       }
     });
 
-    socket.on("msg:receive", (msg: messages) => {
+    socket.on("msg:receiveAll", (msgs: messages) => {
+      this.messages = msgs;
+      this.shortenMsgCache();
+
+      conf.onMessage &&
+        this.messages.forEach((msg) => this.conf.onMessage(msg));
+    });
+
+    socket.on("msg:receive", (msg: message) => {
+      this.messages.push(msg);
+      this.shortenMsgCache();
       conf.onMessage && conf.onMessage(msg);
     });
 
@@ -46,5 +63,15 @@ export default class MessageManagerMaker {
       uuid: this.uuid,
       msg,
     } as msgCreate);
+  }
+
+  private shortenMsgCache() {
+    if (this.conf.storeMessages && this.conf.storeMessages === -1) {
+      return;
+    }
+    while (this.messages.length > (this.conf.storeMessages || 20)) {
+      console.log("shortened");
+      this.messages.shift();
+    }
   }
 }
