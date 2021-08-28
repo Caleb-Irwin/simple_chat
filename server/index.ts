@@ -4,7 +4,7 @@ import { v4 } from "uuid";
 import { Server } from "socket.io";
 import compression from "compression";
 
-import { msgCreate, messages, authCreate } from "./socketTypes";
+import { msgCreate, messages, message, authCreate } from "./socketTypes";
 
 const app = express();
 const server = createServer(app);
@@ -52,18 +52,35 @@ io.on("connection", (socket) => {
         msg.msg
       }" (${msg.uuid})`
     );
+
+    function sendError(text: string) {
+      let msg: message = {
+        color: "000000",
+        message: "Error! " + text,
+        senderType: "Server",
+      };
+      socket.emit("msg:receive", msg);
+    }
+
     if (!state.users[msg.uuid]) {
-      // res.sendStatus(401);
+      sendError("Unauthorized (401)");
       console.log("! Unauthorized (401)");
       return;
     }
     if (!msg.msg || msg.msg.length === 0) {
-      // res.sendStatus(400);
+      sendError("Bad Request (400)");
       console.log("! Bad Request (400)");
       return;
     }
-    if (msg.senderType || msg.senderType === "server") {
-      console.log("! Tried to send message from Server");
+    if (
+      msg.senderType &&
+      (msg.senderType.startsWith("server") ||
+        msg.senderType.startsWith("Server"))
+    ) {
+      sendError("Bad User Name (Don't impersonate the Server)");
+      console.log(
+        `! Tried to send message from "server" or "Server" ("${msg.senderType}")`
+      );
       return;
     }
     let newMessage = {
