@@ -62,6 +62,8 @@ export default class MessageManagerMaker {
     this.socket.emit("msg:create", {
       uuid: this.uuid,
       msg,
+      // @ts-expect-error
+      senderType: document.getElementById("userName").value,
     } as msgCreate);
   }
 
