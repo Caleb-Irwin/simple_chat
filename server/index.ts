@@ -47,7 +47,11 @@ io.on("connection", (socket) => {
   });
 
   socket.on("msg:create", (msg: msgCreate) => {
-    console.log(`| #${state.users[msg.uuid]} "${msg.msg}" (${msg.uuid})`);
+    console.log(
+      `| ${msg.senderType || "Anonymous"} #${state.users[msg.uuid]} "${
+        msg.msg
+      }" (${msg.uuid})`
+    );
     if (!state.users[msg.uuid]) {
       // res.sendStatus(401);
       console.log("! Unauthorized (401)");
@@ -58,9 +62,14 @@ io.on("connection", (socket) => {
       console.log("! Bad Request (400)");
       return;
     }
+    if (msg.senderType || msg.senderType === "server") {
+      console.log("! Tried to send message from Server");
+      return;
+    }
     let newMessage = {
       color: state.users[msg.uuid],
       message: msg.msg,
+      senderType: msg.senderType || "Anonymous",
     };
     state.messages.push(newMessage);
     if (state.messages.length > 16) {

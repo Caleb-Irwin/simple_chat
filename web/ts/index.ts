@@ -1,7 +1,5 @@
 import msgManager from "./message";
 
-let messages = [];
-
 let mm = new msgManager({
   onMessage: (newMsg) => {
     console.log("newMsg", newMsg);
@@ -21,7 +19,7 @@ function displayMessages() {
   mm.messages.forEach((m) => {
     var newLi = document.createElement("LI");
     newLi.style.backgroundColor = "#" + m.color;
-    var text = document.createTextNode(m.message);
+    var text = document.createTextNode(`${m.senderType}: ${m.message}`);
     newLi.appendChild(text);
     messagesElement.appendChild(newLi);
   });

@@ -3,11 +3,13 @@ export type uuid = string;
 
 export interface msgCreate {
   msg: string;
+  senderType?: string;
   uuid: uuid;
 }
 
 export interface message {
   color: color;
+  senderType: string;
   message: string;
 }
 
