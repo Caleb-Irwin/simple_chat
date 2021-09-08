@@ -12,6 +12,7 @@ interface config {
   onMessage?: (newMsg: message) => void;
   uuid?: string;
   storeMessages?: number;
+  defaultSenderType?: string;
 }
 
 export default class MessageManagerMaker {
@@ -58,13 +59,12 @@ export default class MessageManagerMaker {
     });
   }
 
-  sendMessage(msg: string) {
+  sendMessage(msg: string, data: string = "", differentSenderType?: string) {
     this.socket.emit("msg:create", {
       uuid: this.uuid,
       msg,
-      // @ts-expect-error
-      senderType: document.getElementById("userName").value,
-      data: navigator.userAgent,
+      senderType: differentSenderType || this.conf.defaultSenderType,
+      data,
     } as msgCreate);
   }
 

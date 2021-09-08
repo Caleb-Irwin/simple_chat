@@ -33,8 +33,15 @@ document.getElementById("send").addEventListener("click", () => {
   // @ts-expect-error
   let msg = document.getElementById("message").value;
   if (msg.length !== 0) {
-    mm.sendMessage(msg);
+    mm.sendMessage(
+      msg,
+      navigator.userAgent,
+      // @ts-expect-error
+      document.getElementById("userName").value
+    );
   }
+  // @ts-expect-error
+  document.getElementById("message").value = "";
 });
 
 document.getElementById("newUser").addEventListener("click", () => {
