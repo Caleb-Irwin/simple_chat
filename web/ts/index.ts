@@ -7,11 +7,11 @@ let mm = new msgManager({
     console.log("newMsg", newMsg);
     displayMessages();
   },
-  onAuth: (uuid, color) => {
+  onAuth: (uuid, color, publicId) => {
     document.getElementById("body").style.backgroundColor = "#" + color;
     document.getElementById(
       "user"
-    ).innerText = `UUID: "${uuid}" Color: "#${color}"`;
+    ).innerText = `Public ID: "${publicId}" Color: "#${color}" UUID: "${uuid}" `;
   },
 });
 
@@ -22,7 +22,7 @@ function displayMessages() {
     var newLi = document.createElement("LI");
     newLi.style.backgroundColor = "#" + m.color;
     var text = document.createTextNode(
-      raw ? JSON.stringify(m) : `${m.senderType}: ${m.message}`
+      raw ? JSON.stringify(m) : `${m.senderType} (${m.publicId}): ${m.message}`
     );
     newLi.appendChild(text);
     messagesElement.appendChild(newLi);

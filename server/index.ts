@@ -4,7 +4,13 @@ import { v4 } from "uuid";
 import { Server } from "socket.io";
 import compression from "compression";
 
-import { msgCreate, messages, message, authCreate } from "./socketTypes";
+import {
+  msgCreate,
+  messages,
+  message,
+  authCreate,
+  publicId,
+} from "./socketTypes";
 
 const app = express();
 const server = createServer(app);
@@ -12,7 +18,7 @@ const server = createServer(app);
 const port = 8080;
 
 interface stateInterface {
-  users: { [uuid: string]: string };
+  users: { [uuid: string]: { color: string; publicId: publicId } };
   messages: messages;
 }
 
@@ -41,9 +47,13 @@ io.on("connection", (socket) => {
     while (color.length !== 6) {
       color = Math.floor(Math.random() * 16777215).toString(16);
     }
-    state.users[uuid] = color;
+    let publicId = Math.random().toString(36).slice(2, 8);
+    state.users[uuid] = {
+      color,
+      publicId,
+    };
     console.log(`* New User (${uuid}, #${color})`);
-    callback({ uuid, color });
+    callback({ uuid, color, publicId });
   });
 
   socket.on("msg:create", (msg: msgCreate) => {
@@ -57,6 +67,7 @@ io.on("connection", (socket) => {
       let msg: message = {
         color: "000000",
         message: "Error! " + text,
+        publicId: "server!",
         senderType: "Server",
       };
       socket.emit("msg:receive", msg);
@@ -83,8 +94,9 @@ io.on("connection", (socket) => {
       );
       return;
     }
-    let newMessage = {
-      color: state.users[msg.uuid],
+    let newMessage: message = {
+      color: state.users[msg.uuid].color,
+      publicId: state.users[msg.uuid].publicId,
       message: msg.msg,
       senderType: msg.senderType || "Anonymous",
       data: msg.data,

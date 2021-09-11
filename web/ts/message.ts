@@ -8,7 +8,7 @@ import {
 } from "../../server/socketTypes";
 
 interface config {
-  onAuth?: (uuid: string, color: string) => void;
+  onAuth?: (uuid: string, color: string, publicId: string) => void;
   onMessage?: (newMsg: message) => void;
   uuid?: string;
   storeMessages?: number;
@@ -19,6 +19,7 @@ export default class MessageManagerMaker {
   socket: Socket;
   uuid: string = null;
   color: string = "000000";
+  publicId: string = "......";
   conf: config;
   messages: messages = [];
 
@@ -55,7 +56,9 @@ export default class MessageManagerMaker {
     this.socket.emit("auth:create", (account: authCreate) => {
       this.uuid = account.uuid;
       this.color = account.color;
-      this.conf.onAuth && this.conf.onAuth(this.uuid, this.color);
+      this.publicId = account.publicId;
+      this.conf.onAuth &&
+        this.conf.onAuth(this.uuid, this.color, this.publicId);
     });
   }
 
