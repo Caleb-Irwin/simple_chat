@@ -1,35 +1,42 @@
 import msgManager from "./message";
 
-let raw = false;
+let devMode = false;
+
+let onAuth = (uuid, color, publicId) => {
+  document.getElementById("body").style.backgroundColor = "#" + color;
+  let userEl = document.getElementById("user");
+  userEl.innerText = `${publicId} #${color} (${
+    devMode ? uuid : `${uuid.slice(0, 5)}***${uuid.slice(uuid.length - 5)}`
+  })`;
+  userEl.style.backgroundColor = "#" + color;
+  userEl.style.borderColor = "#" + color;
+};
 
 let mm = new msgManager({
   onMessage: (newMsg) => {
     console.log("newMsg", newMsg);
     displayMessages();
   },
-  onAuth: (uuid, color, publicId) => {
-    document.getElementById("body").style.backgroundColor = "#" + color;
-    document.getElementById(
-      "user"
-    ).innerText = `Public ID: "${publicId}" Color: "#${color}" UUID: "${uuid}" `;
-  },
+  onAuth,
 });
 
 function displayMessages() {
   let messagesElement = document.getElementById("messages");
   messagesElement.innerHTML = "";
   mm.messages.forEach((m) => {
-    var newLi = document.createElement("LI");
-    newLi.style.backgroundColor = "#" + m.color;
+    var newDiv = document.createElement("DIV");
+    newDiv.style.borderLeftColor = "#" + m.color;
     var text = document.createTextNode(
-      raw ? JSON.stringify(m) : `${m.senderType} (${m.publicId}): ${m.message}`
+      devMode
+        ? JSON.stringify(m)
+        : `${m.senderType} [${m.publicId}] ${m.message}`
     );
-    newLi.appendChild(text);
-    messagesElement.appendChild(newLi);
+    newDiv.appendChild(text);
+    messagesElement.appendChild(newDiv);
   });
 }
 
-document.getElementById("send").addEventListener("click", () => {
+let send = () => {
   // @ts-expect-error
   let msg = document.getElementById("message").value;
   if (msg.length !== 0) {
@@ -42,13 +49,26 @@ document.getElementById("send").addEventListener("click", () => {
   }
   // @ts-expect-error
   document.getElementById("message").value = "";
+};
+
+document.getElementById("send").addEventListener("click", send);
+
+document.getElementById("newColor").addEventListener("click", () => {
+  alert("TODO");
 });
 
 document.getElementById("newUser").addEventListener("click", () => {
   mm.newAccount();
 });
 
-document.getElementById("toggleRaw").addEventListener("click", () => {
-  raw = !raw;
+document.getElementById("devMode").addEventListener("click", () => {
+  devMode = !devMode;
   displayMessages();
+  onAuth(mm.uuid, mm.color, mm.publicId);
+});
+
+document.getElementById("message").addEventListener("keypress", (event) => {
+  if (event.code === "Enter") {
+    send();
+  }
 });
