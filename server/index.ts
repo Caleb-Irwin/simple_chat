@@ -10,6 +10,8 @@ import {
   message,
   authCreate,
   publicId,
+  color,
+  uuid,
 } from "./socketTypes";
 
 const app = express();
@@ -41,6 +43,16 @@ io.on("connection", (socket) => {
   console.log(`> a user connected (${socket.id})`);
   socket.emit("msg:receiveAll", state.messages);
 
+  function sendError(text: string) {
+    let msg: message = {
+      color: "000000",
+      message: "Error! " + text,
+      publicId: "server!",
+      senderType: "Server",
+    };
+    socket.emit("msg:receive", msg);
+  }
+
   socket.on("auth:create", (callback: (auth: authCreate) => void) => {
     let uuid = v4();
     let color = "";
@@ -56,22 +68,29 @@ io.on("connection", (socket) => {
     callback({ uuid, color, publicId });
   });
 
+  socket.on(
+    "auth:newColor",
+    (token: uuid, callback: (color: color) => void) => {
+      if (!state.users[token]) {
+        sendError("Unauthorized (401)");
+        console.log("! Unauthorized (401)");
+        return;
+      }
+      let color = "";
+      while (color.length !== 6) {
+        color = Math.floor(Math.random() * 16777215).toString(16);
+      }
+      state.users[token].color = color;
+      callback(color);
+    }
+  );
+
   socket.on("msg:create", (msg: msgCreate) => {
     console.log(
-      `| ${msg.senderType || "Anonymous"} #${state.users[msg.uuid]} "${
+      `| ${msg.senderType || "Anonymous"} #${state.users[msg.uuid].color} "${
         msg.msg
-      }" (${msg.uuid})`
+      }" (${state.users[msg.uuid].publicId})`
     );
-
-    function sendError(text: string) {
-      let msg: message = {
-        color: "000000",
-        message: "Error! " + text,
-        publicId: "server!",
-        senderType: "Server",
-      };
-      socket.emit("msg:receive", msg);
-    }
 
     if (!state.users[msg.uuid]) {
       sendError("Unauthorized (401)");

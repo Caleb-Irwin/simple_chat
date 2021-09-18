@@ -54,7 +54,7 @@ let send = () => {
 document.getElementById("send").addEventListener("click", send);
 
 document.getElementById("newColor").addEventListener("click", () => {
-  alert("TODO");
+  mm.newColor();
 });
 
 document.getElementById("newUser").addEventListener("click", () => {

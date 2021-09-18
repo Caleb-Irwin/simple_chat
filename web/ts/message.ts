@@ -5,6 +5,7 @@ import {
   messages,
   msgCreate,
   message,
+  color,
 } from "../../server/socketTypes";
 
 interface config {
@@ -57,6 +58,14 @@ export default class MessageManagerMaker {
       this.uuid = account.uuid;
       this.color = account.color;
       this.publicId = account.publicId;
+      this.conf.onAuth &&
+        this.conf.onAuth(this.uuid, this.color, this.publicId);
+    });
+  }
+
+  newColor() {
+    this.socket.emit("auth:newColor", this.uuid, (color: color) => {
+      this.color = color;
       this.conf.onAuth &&
         this.conf.onAuth(this.uuid, this.color, this.publicId);
     });
