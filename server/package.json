@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "concurrently \"nodemon build/index.js\" \"tsc --watch\" ",
+    "dev": "concurrently \"nodemon build/index.js\" \"tsc --watch\" \"cd ../web && npm run dev\" ",
     "build": "tsc"
   },
   "author": "Caleb Irwin (me at calebirwin.ca)",
