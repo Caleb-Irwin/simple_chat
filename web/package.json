@@ -4,7 +4,7 @@
   "description": "",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "parcel ./public/index.html",
+    "dev": "parcel watch ./public/index.html --no-hmr",
     "build": "parcel build ./public/index.html"
   },
   "author": "Caleb Irwin (me @ calebirwin.ca)",
